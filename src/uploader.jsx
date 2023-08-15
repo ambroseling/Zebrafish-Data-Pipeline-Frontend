@@ -136,6 +136,21 @@ const handleExport = async () => {
     const image_response = await httpService.get(
       "http://127.0.0.1:5000/get_images"
     );
+
+    const frame_download = await httpService.get(
+      "http://127.0.0.1:5000/download_images",
+      { responseType: "arraybuffer" }
+    ).then((response) => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'extracted_images.zip';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    })
+    .catch((error) => console.error('Error downloading images:', error));
+
     console.log("Image recevied:", image_response);
     console.log(image_response.data.images);
     console.log("IMAGE PATHS:", imagePaths);
